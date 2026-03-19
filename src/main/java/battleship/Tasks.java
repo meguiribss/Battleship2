@@ -71,7 +71,7 @@ public class Tasks {
 					if (myFleet != null)
 						game.printMyBoard(false, true);
 					break;
-				case RAJADA:
+				/*case RAJADA:
 					if (game != null) {
 						game.readEnemyFire(in);
 						jogadas.add("Jogada realizada pelo inimigo");
@@ -80,13 +80,28 @@ public class Tasks {
 
 						if (game.getRemainingShips() == 0) {
 							game.over();
+							Scoreboard.save("Jogo terminado - vitória");
 							System.exit(0);
 						}
+					}*/
+				// GAMETIMER implementado nesta classe
+				case RAJADA:
+					if (game != null) {
+
+						GameTimer timer = new GameTimer();
+						timer.start();
+
+						game.readEnemyFire(in);
+
+						timer.stop();
+
+						myFleet.printStatus();
+						game.printMyBoard(true, false);
+						break;
 					}
-					break;
 				case SIMULA:
 					if (game != null) {
-						while (game.getRemainingShips() > 0){
+						while (game.getRemainingShips() > 0) {
 							game.randomEnemyFire();
 							jogadas.add("Jogada automática");
 							myFleet.printStatus();
@@ -100,6 +115,7 @@ public class Tasks {
 
 						if (game.getRemainingShips() == 0) {
 							game.over();
+							Scoreboard.save("Jogo terminado - vitória");
 							System.exit(0);
 						}
 					}
@@ -117,6 +133,9 @@ public class Tasks {
 					}
 					break;
 
+				case AJUDA:
+					menuHelp();
+					break;
 				default:
 					System.out.println("Que comando é esse??? Repete ...");
 			}
@@ -142,6 +161,7 @@ public class Tasks {
 		System.out.println("- " + DESISTIR + ": Encerra o jogo.");
 		System.out.println("===============================================================");
 	}
+
 	/**
 	 * This operation allows the build up of a fleet, given user data
 	 *
@@ -239,5 +259,4 @@ public class Tasks {
 			throw new IllegalArgumentException("Formato inválido. Use 'A3', 'A 3' ou similar.");
 		}
 	}
-
 }
