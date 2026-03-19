@@ -12,5 +12,4 @@ public class GameTimer {
         long end = System.currentTimeMillis();
         System.out.println("Tempo da jogada: " + (end - start) + " ms");
     }
-
 }

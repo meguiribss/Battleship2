@@ -92,7 +92,6 @@ public class Tasks {
 						game.printMyBoard(true, false);
 						break;
 					}
-
 				case SIMULA:
 					if (game != null) {
 						while (game.getRemainingShips() > 0) {
