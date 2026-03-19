@@ -93,6 +93,7 @@ public class Tasks {
 						break;
 					}
 				case SIMULA:
+
 					if (game != null) {
 						while (game.getRemainingShips() > 0) {
 							game.randomEnemyFire();
