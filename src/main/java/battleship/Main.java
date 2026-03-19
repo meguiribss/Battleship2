@@ -5,7 +5,7 @@ package battleship;
 
 /**
  * The type Main.
- *
+ *g
  * @author britoeabreu
  * @author adrianolopes
  * @author miguelgoulao
