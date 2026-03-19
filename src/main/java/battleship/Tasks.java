@@ -95,16 +95,18 @@ public class Tasks {
 
 						timer.stop();
 
+						jogadas.add("Rajada manual executada");
+
 						myFleet.printStatus();
 						game.printMyBoard(true, false);
-						break;
 					}
+					break;
+
 				case SIMULA:
 					if (game != null) {
 						while (game.getRemainingShips() > 0) {
 							game.randomEnemyFire();
-							jogadas.add("Jogada automática");
-							myFleet.printStatus();
+							jogadas.add("Jogada automática - tiro aleatório executado");							myFleet.printStatus();
 							game.printMyBoard(true, false);
 							try {
 								Thread.sleep(3000);
@@ -116,7 +118,7 @@ public class Tasks {
 						if (game.getRemainingShips() == 0) {
 							game.over();
 							Scoreboard.save("Jogo terminado - vitória");
-							System.exit(0);
+							System.out.println("Jogo terminou! Usa o comando 'pdf' para exportar.");
 						}
 					}
 					break;
