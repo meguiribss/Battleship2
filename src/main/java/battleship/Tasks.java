@@ -1,5 +1,6 @@
 package battleship;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.apache.logging.log4j.LogManager;
@@ -33,6 +34,7 @@ public class Tasks {
 	private static final String STATUS = "estado";
 	private static final String SIMULA = "simula";
 
+	private static final String PDF = "pdf";
 	/**
 	 * This task also tests the fighting element of a round of three shots
 	 */
@@ -40,6 +42,9 @@ public class Tasks {
 
 		IFleet myFleet = null;
 		IGame game = null;
+
+		ArrayList<String> jogadas = new ArrayList<>();
+
 		menuHelp();
 
 		System.out.print("> ");
@@ -69,6 +74,7 @@ public class Tasks {
 				/*case RAJADA:
 					if (game != null) {
 						game.readEnemyFire(in);
+						jogadas.add("Jogada realizada pelo inimigo");
 						myFleet.printStatus();
 						game.printMyBoard(true, false);
 
@@ -97,6 +103,7 @@ public class Tasks {
 					if (game != null) {
 						while (game.getRemainingShips() > 0) {
 							game.randomEnemyFire();
+							jogadas.add("Jogada automática");
 							myFleet.printStatus();
 							game.printMyBoard(true, false);
 							try {
@@ -117,6 +124,15 @@ public class Tasks {
 					if (game != null)
 						game.printMyBoard(true, true);
 					break;
+                case AJUDA:
+                    menuHelp();
+                    break;
+				case PDF:
+					if (game != null) {
+						PDFexporter.export(jogadas, game.getRemainingShips());
+					}
+					break;
+
 				case AJUDA:
 					menuHelp();
 					break;
