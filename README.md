@@ -146,6 +146,8 @@ Contributions are what make the open-source community such an amazing place to l
 ## 📄 License
 Distributed under the MIT License. See `LICENSE` for more information.
 
+# Video de demostração do projeto
+https://youtu.be/jI6xYpNlyHE
 ---
 **Maintained by:** [@britoeabreu](https://github.com/britoeabreu)  
 *Created for the Software Engineering students at ISCTE-IUL.*
