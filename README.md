@@ -9,6 +9,7 @@
 ---
 
 ## 📖 Table of Contents
+
 - [Project Overview](#-project-overview)
 - [Key Features](#-key-features)
 - [Technical Stack](#-technical-stack)
@@ -16,7 +17,7 @@
 - [Code Architecture](#-code-architecture)
 - [Roadmap](#-roadmap)
 - [Contributing](#-contributing)
-
+- [Sprint - Part 2: LLM Training](#-sprint---part-2-llm-training)
 ---
 
 ## 🎯 Project Overview
@@ -141,6 +142,80 @@ Contributions are what make the open-source community such an amazing place to l
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a **Pull Request**
 
+---
+
+## 🤖 Sprint - Part 2: LLM Training
+
+### Communication Protocol
+
+The interaction with the LLM was performed using JSON objects, both for sending moves and receiving results.
+
+Each move consists of 3 shots in the following format:
+
+```
+{
+  "shots": [
+    {"row": "A", "column": 5},
+    {"row": "C", "column": 10},
+    {"row": "F", "column": 5}
+  ]
+}
+```
+
+The system responds with a JSON object containing information about the results of the move, including valid shots, repeated shots, shots outside the board, hits, and sunk ships.
+
+---
+
+### LLM Strategy
+
+A Large Language Model (LLM) was used to simulate a Battleship player.
+
+The implemented strategy includes:
+
+- Maintaining a battle log with all previous moves
+- Avoiding repeated coordinates
+- Respecting board limits (A–J, 1–10)
+- Using a distributed search strategy when no hits are found
+- Targeting adjacent positions after a hit
+- Determining ship orientation after multiple hits
+- After sinking a ship, excluding surrounding positions
+
+The model was trained using the **few-shot prompting** technique, through iterative interactions between the game and the LLM.
+
+---
+
+### Example Interaction
+
+LLM move:
+```
+{
+  "shots": [
+    {"row": "E", "column": 5},
+    {"row": "F", "column": 6},
+    {"row": "D", "column": 4}
+  ]
+}
+```
+Game response:
+```
+rajada E5 F6 D4
+Jogada nº2 -> 3 tiros válidos: 1 tiro num(a) Nau + 2 tiros na água
+JSON enviado para o LLM:
+{
+  "validShots" : 3,
+  "sunkBoats" : [ ],
+  "repeatedShots" : 0,
+  "outsideShots" : 0,
+  "hitsOnBoats" : [ {
+    "hits" : 1,
+    "type" : "Nau"
+  } ],
+  "missedShots" : 2
+}
+
+Tempo da jogada: 16 ms
+Estado da Frota: 11 a flutuar, 0 afundados!
+```
 ---
 
 ## 📄 License
