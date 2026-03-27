@@ -1,0 +1,20 @@
+# Margarida Ribeiro 124133 - Long Method detection
+
+name: Qodana Code Quality
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  qodana:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Qodana Scan
+        uses: JetBrains/qodana-action@v2023.3
+        with:
+          args: --baseline qodana.sarif.json
