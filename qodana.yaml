@@ -12,8 +12,3 @@ exclude:
       - target
 
 failThreshold: 0
-
-inspections:
-  - id: MethodWithTooManyParameters
-  - id: CyclomaticComplexity
-  - id: MethodLength
