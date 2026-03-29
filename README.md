@@ -226,3 +226,15 @@ https://youtu.be/jI6xYpNlyHE
 ---
 **Maintained by:** [@britoeabreu](https://github.com/britoeabreu)  
 *Created for the Software Engineering students at ISCTE-IUL.*
+
+# Resposta Ficha 3 Tarefa 2 Parte A Ponto 4
+# Margarida Ribeiro 124133 - Long Method 
+Para a deteção de cheiros ao código, foi escolhido o cheiro “Long Method”, definido por Martin Fowler como métodos excessivamente longos e complexos, difíceis de compreender, testar e manter.
+
+Com base neste conceito, foi utilizado um modelo de linguagem (LLM) para gerar um workflow YAML que integra o Qodana for JVM com o GitHub Actions, permitindo automatizar a análise do código.
+
+O workflow criado executa o Qodana sempre que ocorre um push na branch principal, utilizando o perfil recomendado de inspeções do IntelliJ IDEA. Esta ferramenta analisa o código com base em métricas ao nível do método, nomeadamente a complexidade ciclomática (Cyclomatic Complexity), o número de linhas de código (Lines of Code) e o número de parâmetros (Number of Parameters).
+
+Estas métricas são utilizadas como indicadores quantitativos para identificar métodos potencialmente problemáticos, seguindo as orientações do livro “Object-Oriented Metrics in Practice”. Métodos com valores elevados nestas métricas são considerados candidatos ao cheiro “Long Method”.
+
+Desta forma, o workflow permite automatizar a deteção deste tipo de problema no código, integrando práticas de qualidade de software no processo de desenvolvimento.
