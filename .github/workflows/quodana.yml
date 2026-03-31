@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - main
+      - Pedro_tarefa2
 
 jobs:
   qodana:
@@ -18,4 +19,4 @@ jobs:
       - name: Run Qodana
         uses: JetBrains/qodana-action@v2024.1
         with:
-          args: --linter jetbrains/qodana-jvm
+          linter: jetbrains/qodana-jvm
