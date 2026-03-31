@@ -1,0 +1,22 @@
+# IGE-122998 - Pedro Soares
+
+name: Qodana Code Analysis
+
+on:
+  push:
+    branches:
+      - main
+      - nome-do-teu-branch
+
+jobs:
+  qodana:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run Qodana
+        uses: JetBrains/qodana-action@v2024.1
+        with:
+          linter: jetbrains/qodana-jvm
