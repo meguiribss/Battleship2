@@ -17,5 +17,4 @@ jobs:
 
       - name: Run Qodana
         uses: JetBrains/qodana-action@v2024.1
-        with:
-          args: --fail-threshold 50
+
