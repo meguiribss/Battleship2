@@ -1,0 +1,21 @@
+# IGE-122978 – Luísa Almas
+
+name: Qodana Long Parameter List Analysis
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  qodana:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run Qodana
+        uses: JetBrains/qodana-action@v2024.1
+        with:
+          args: --fail-threshold 50
