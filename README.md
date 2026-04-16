@@ -23,6 +23,7 @@
 ## 🎯 Project Overview
 This project serves as a template and reference for students learning **Object-Oriented Programming (OOP)** and **Software Quality**. It simulates a battleship environment where players must strategically place ships and sink the enemy fleet.
 
+
 ### 🎮 The Rules
 The game is played on a grid (typically 10x10). The coordinate system is defined as:
 
@@ -93,6 +94,7 @@ public class Ship {
 }
 ```
 
+<details>
 ### Design Patterns Used:
 - **Strategy Pattern:** For different AI difficulty levels.
 - **Observer Pattern:** To update the UI when a ship is hit.
@@ -238,3 +240,12 @@ O workflow criado executa o Qodana sempre que ocorre um push na branch principal
 Estas métricas são utilizadas como indicadores quantitativos para identificar métodos potencialmente problemáticos, seguindo as orientações do livro “Object-Oriented Metrics in Practice”. Métodos com valores elevados nestas métricas são considerados candidatos ao cheiro “Long Method”.
 
 Desta forma, o workflow permite automatizar a deteção deste tipo de problema no código, integrando práticas de qualidade de software no processo de desenvolvimento.
+
+# Ficha 4 - maventest.yml Testes Unitários
+Este projeto utiliza GitHub Actions para integração contínua.
+
+Sempre que é feito um push ou pull request para o ramo main, o workflow configurado executa automaticamente os testes unitários do projeto utilizando Maven e JUnit.
+
+Desta forma é possível garantir que o código continua a funcionar corretamente e que novas alterações não introduzem erros no sistema.
+
+O workflow utilizado chama-se Java with Maven e está localizado na pasta .github/workflows do repositório.
