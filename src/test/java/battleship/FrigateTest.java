@@ -168,4 +168,85 @@ public class FrigateTest {
 		assertThrows(NullPointerException.class, () -> new Frigate(Compass.NORTH, null),
 				"Error: NullPointerException should be thrown for null position.");
 	}
+
+	@Test
+	@DisplayName("Constructor with SOUTH bearing should create 4 positions")
+	void testConstructorSouth() {
+		frigate = new Frigate(Compass.SOUTH, new Position(5, 5));
+
+		List<IPosition> positions = frigate.getPositions();
+
+		assertEquals(4, positions.size());
+	}
+
+	@Test
+	@DisplayName("Ship positions start not occupied")
+	void testAllPositionsStartNotOccupied() {
+		for (IPosition pos : frigate.getPositions()) {
+			assertFalse(pos.isOccupied());
+		}
+	}
+
+	@Test
+	@DisplayName("Ship should still float when two positions are hit")
+	void testStillFloatingWithTwoHits() {
+		frigate.getPositions().get(0).shoot();
+		frigate.getPositions().get(1).shoot();
+
+		assertTrue(frigate.stillFloating());
+	}
+
+	@Test
+	@DisplayName("Ship should still float when three positions are hit")
+	void testStillFloatingWithThreeHits() {
+		frigate.getPositions().get(0).shoot();
+		frigate.getPositions().get(1).shoot();
+		frigate.getPositions().get(2).shoot();
+
+		assertTrue(frigate.stillFloating());
+	}
+
+	@Test
+	void testTopMostPosSouth() {
+		frigate = new Frigate(Compass.SOUTH, new Position(5, 5));
+
+		assertEquals(5, frigate.getTopMostPos());
+	}
+
+	@Test
+	void testBottomMostPosSouth() {
+		frigate = new Frigate(Compass.SOUTH, new Position(5, 5));
+
+		assertEquals(8, frigate.getBottomMostPos());
+	}
+
+	@Test
+	@DisplayName("Left most position for EAST bearing")
+	void testLeftMostPosEast() {
+		frigate = new Frigate(Compass.EAST, new Position(5, 5));
+
+		assertEquals(5, frigate.getLeftMostPos());
+	}
+
+	@Test
+	@DisplayName("Right most position for EAST bearing")
+	void testRightMostPosEast() {
+		frigate = new Frigate(Compass.EAST, new Position(5, 5));
+
+		assertEquals(8, frigate.getRightMostPos());
+	}
+
+	@Test
+	@DisplayName("Ship category should always be Fragata")
+	void testCategory() {
+		assertEquals("Fragata", frigate.getCategory());
+	}
+
+	@Test
+	@DisplayName("Ship bearing should match constructor")
+	void testBearingWest() {
+		frigate = new Frigate(Compass.WEST, new Position(5, 5));
+
+		assertEquals(Compass.WEST, frigate.getBearing());
+	}
 }
