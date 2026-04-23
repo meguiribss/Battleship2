@@ -182,4 +182,119 @@ public class PositionTest {
 				"Incorrect string representation: expected '" + expected +
 						"' but got '" + position.toString() + "'");
 	}
+
+	@Test
+	@DisplayName("Classic constructor should convert row and column correctly")
+	void classicConstructor() {
+		Position pos = new Position('C', 4);
+
+		assertEquals(2, pos.getRow());
+		assertEquals(3, pos.getColumn());
+		assertEquals('C', pos.getClassicRow());
+		assertEquals(4, pos.getClassicColumn());
+	}
+
+	@Test
+	@DisplayName("Classic constructor should accept lowercase letters")
+	void classicConstructorLowerCase() {
+		Position pos = new Position('d', 5);
+
+		assertEquals(3, pos.getRow());
+		assertEquals(4, pos.getColumn());
+	}
+
+	@Test
+	@DisplayName("Random position should always be inside board")
+	void randomPositionShouldBeInsideBoard() {
+		for (int i = 0; i < 50; i++) {
+			Position random = Position.randomPosition();
+			assertTrue(random.isInside());
+		}
+	}
+
+	@Test
+	@DisplayName("Same position is considered adjacent")
+	void samePositionIsAdjacent() {
+		Position same = new Position(2, 3);
+
+		assertTrue(position.isAdjacentTo(same));
+	}
+
+	@Test
+	@DisplayName("Adjacent positions from center should return 8 positions")
+	void adjacentPositionsCenter() {
+		var adjacent = position.adjacentPositions();
+
+		assertEquals(8, adjacent.size());
+	}
+
+	@Test
+	@DisplayName("Adjacent positions from corner should return 3 positions")
+	void adjacentPositionsCorner() {
+		Position corner = new Position(0, 0);
+
+		var adjacent = corner.adjacentPositions();
+
+		assertEquals(3, adjacent.size());
+	}
+
+	@Test
+	@DisplayName("Adjacent positions from edge should return 5 positions")
+	void adjacentPositionsEdge() {
+		Position edge = new Position(0, 5);
+
+		var adjacent = edge.adjacentPositions();
+
+		assertEquals(5, adjacent.size());
+	}
+
+	@Test
+	@DisplayName("Different row should not be equal")
+	void equalsDifferentRow() {
+		Position other = new Position(1, 3);
+
+		assertFalse(position.equals(other));
+	}
+
+	@Test
+	@DisplayName("Different occupied state changes hashCode")
+	void hashCodeChangesWhenOccupied() {
+		int before = position.hashCode();
+
+		position.occupy();
+
+		int after = position.hashCode();
+
+		assertNotEquals(before, after);
+	}
+
+	@Test
+	@DisplayName("Different hit state changes hashCode")
+	void hashCodeChangesWhenHit() {
+		int before = position.hashCode();
+
+		position.shoot();
+
+		int after = position.hashCode();
+
+		assertNotEquals(before, after);
+	}
+
+	@Test
+	@DisplayName("Shoot twice keeps position hit")
+	void shootTwice() {
+		position.shoot();
+		position.shoot();
+
+		assertTrue(position.isHit());
+	}
+
+	@Test
+	@DisplayName("Occupy twice keeps position occupied")
+	void occupyTwice() {
+		position.occupy();
+		position.occupy();
+
+		assertTrue(position.isOccupied());
+	}
 }
