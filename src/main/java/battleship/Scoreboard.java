@@ -11,7 +11,7 @@ public class Scoreboard {
             writer.write(result + "\n");
             writer.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Erro ao guardar scoreboard: " + e.getMessage());
         }
     }
 }
