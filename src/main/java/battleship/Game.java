@@ -3,6 +3,7 @@ package battleship;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -55,18 +56,30 @@ public class Game implements IGame
 				}
 
 		System.out.println();
-		System.out.print("    ");
-		for (int col = 0; col < BOARD_SIZE; col++) {
-			System.out.print(" " + (col + 1));
-		}
+		printHeader();
+		printTopBorder();
+		printGrid(map);
+		printBottomBorder();
+		printLegend(showLegend);
 		System.out.println();
+	}
 
-		System.out.print("   +-");
-		for (int col = 0; col < BOARD_SIZE; col++) {
-			System.out.print("--");
+	private static void printLegend(boolean showLegend) {
+		if (showLegend) {
+			System.out.println("          LEGENDA");
+			System.out.println("'" + SHIP_MARKER + "'->navio, '" + SHIP_ADJACENT_MARKER + "'->adjacente a navio, '" + EMPTY_MARKER + "'->água");
+			System.out.println("'" + SHOT_SHIP_MARKER + "'->Tiro certeiro, '" + SHOT_WATER_MARKER + "'->Tiro na água");
 		}
-		System.out.println("+");
+	}
 
+	private static void printBottomBorder() {
+		System.out.print("   +");
+		for (int col = 0; col < BOARD_SIZE; col++)
+			System.out.print("--");
+		System.out.println("-+");
+	}
+
+	private static void printGrid(char[][] map) {
 		for (int row = 0; row < BOARD_SIZE; row++) {
 			Position pos = new Position(row, 0);
 			char rowLabel = pos.getClassicRow();
@@ -75,16 +88,20 @@ public class Game implements IGame
 				System.out.print(" " + map[row][col]);
 			System.out.println(" |");
 		}
+	}
 
-		System.out.print("   +");
-		for (int col = 0; col < BOARD_SIZE; col++)
+	private static void printTopBorder() {
+		System.out.print("   +-");
+		for (int col = 0; col < BOARD_SIZE; col++) {
 			System.out.print("--");
-		System.out.println("-+");
+		}
+		System.out.println("+");
+	}
 
-		if (showLegend) {
-			System.out.println("          LEGENDA");
-			System.out.println("'" + SHIP_MARKER + "'->navio, '" + SHIP_ADJACENT_MARKER + "'->adjacente a navio, '" + EMPTY_MARKER + "'->água");
-			System.out.println("'" + SHOT_SHIP_MARKER + "'->Tiro certeiro, '" + SHOT_WATER_MARKER + "'->Tiro na água");
+	private static void printHeader() {
+		System.out.print("    ");
+		for (int col = 0; col < BOARD_SIZE; col++) {
+			System.out.print(" " + (col + 1));
 		}
 		System.out.println();
 	}
@@ -110,6 +127,29 @@ public class Game implements IGame
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
 		// 1. Create a simplified list containing only the desired data
+		List<Map<String, Object>> simplifiedShots = buildSimplifiedShots(shots);
+
+		String jsonString = convertToJson(objectMapper, simplifiedShots);
+
+//		System.out.println(jsonString);
+//		System.out.println();
+
+		// Retornar o JSON
+		return jsonString;
+	}
+
+	private static String convertToJson(ObjectMapper objectMapper, List<Map<String, Object>> simplifiedShots) {
+		String jsonString = null;
+		try {
+			// 2. Serialize the simplified list instead of the raw 'shots' list
+			jsonString = objectMapper.writeValueAsString(simplifiedShots);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException("Erro ao serializar o JSON", e);
+		}
+		return jsonString;
+	}
+
+	private static @NotNull List<Map<String, Object>> buildSimplifiedShots(List<IPosition> shots) {
 		List<Map<String, Object>> simplifiedShots = new ArrayList<>();
 		for (IPosition shot : shots) {
 			Map<String, Object> simplePos = new LinkedHashMap<>();
@@ -118,20 +158,7 @@ public class Game implements IGame
 			simplePos.put("column", shot.getClassicColumn());
 			simplifiedShots.add(simplePos);
 		}
-
-		String jsonString = null;
-		try {
-			// 2. Serialize the simplified list instead of the raw 'shots' list
-			jsonString = objectMapper.writeValueAsString(simplifiedShots);
-		} catch (JsonProcessingException e) {
-			throw new RuntimeException("Erro ao serializar o JSON", e);
-		}
-
-//		System.out.println(jsonString);
-//		System.out.println();
-
-		// Retornar o JSON
-		return jsonString;
+		return simplifiedShots;
 	}
 
 	//------------------------------------------------------------------
@@ -212,20 +239,28 @@ public class Game implements IGame
 		// Criar uma instância de Random com uma seed baseada no timestamp atual
 		Random random = new Random(System.currentTimeMillis());
 
-		Set<IPosition> usablePositions = new HashSet<IPosition>();
-		for (int r = 0; r < BOARD_SIZE; r++)
-			for (int c = 0; c < BOARD_SIZE; c++)
-				usablePositions.add(new Position(r, c));
-
-		this.myFleet.getSunkShips().forEach(ship -> usablePositions.removeAll(ship.getAdjacentPositions()));
-		this.alienMoves.forEach(move ->  usablePositions.removeAll(move.getShots()));
-
-		List<IPosition> candidateShots = new ArrayList<>(usablePositions);
+		List<IPosition> candidateShots = buildCandidateShots();
 
 		// Criar lista para armazenar os tiros
+		List<IPosition> shots = generateRandomShots(candidateShots, random);
+
+		printShots(shots);
+
+		this.fireShots(shots);
+
+		return Game.jsonShots(shots);
+	}
+
+	private static void printShots(List<IPosition> shots) {
+		System.out.print("rajada ");
+		for (IPosition shot : shots)
+			System.out.print(shot + " ");
+		System.out.println();
+	}
+
+	private static @NotNull List<IPosition> generateRandomShots(List<IPosition> candidateShots, Random random) {
 		List<IPosition> shots = new ArrayList<IPosition>();
 
-		System.out.println();
 		// Gerar coordenadas únicas até atingir o número definido por NUMBER_SHOTS
 
 		IPosition newShot = null;
@@ -244,15 +279,20 @@ public class Game implements IGame
 			while (shots.size() < Game.NUMBER_SHOTS)
 				shots.add(newShot);
 		}
+		return shots;
+	}
 
-		System.out.print("rajada ");
-		for (IPosition shot : shots)
-			System.out.print(shot + " ");
-		System.out.println();
+	private @NotNull List<IPosition> buildCandidateShots() {
+		Set<IPosition> usablePositions = new HashSet<IPosition>();
+		for (int r = 0; r < BOARD_SIZE; r++)
+			for (int c = 0; c < BOARD_SIZE; c++)
+				usablePositions.add(new Position(r, c));
 
-		this.fireShots(shots);
+		this.myFleet.getSunkShips().forEach(ship -> usablePositions.removeAll(ship.getAdjacentPositions()));
+		this.alienMoves.forEach(move ->  usablePositions.removeAll(move.getShots()));
 
-		return Game.jsonShots(shots);
+		List<IPosition> candidateShots = new ArrayList<>(usablePositions);
+		return candidateShots;
 	}
 
 
