@@ -7,12 +7,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Map;
 
 /**
  * The type Ship.
  */
 public abstract class Ship implements IShip
 {
+	private interface ShipCreator {
+		Ship create(Compass bearing, Position pos);
+	}
 	/**
 	 * The constant GALEAO.
 	 */
@@ -34,6 +38,14 @@ public abstract class Ship implements IShip
 	 */
 	private static final String BARCA = "barca";
 
+	private static final Map<String, ShipCreator> shipFactory = Map.of(
+			BARCA, Barge::new,
+			CARAVELA, Caravel::new,
+			NAU, Carrack::new,
+			FRAGATA, Frigate::new,
+			GALEAO, Galleon::new
+	);
+
 	/**
 	 * Create a new ship
 	 *
@@ -48,28 +60,13 @@ public abstract class Ship implements IShip
 		assert bearing != null;
 		assert pos != null;
 
-        Ship s;
-        switch (shipKind)
-        {
-        case BARCA:
-            s = new Barge(bearing, pos);
-			break;
-        case CARAVELA:
-            s = new Caravel(bearing, pos);
-			break;
-        case NAU:
-            s = new Carrack(bearing, pos);
-			break;
-        case FRAGATA:
-            s = new Frigate(bearing, pos);
-			break;
-        case GALEAO:
-            s = new Galleon(bearing, pos);
-			break;
-        default:
-            s = null;
-        }
-        return s;
+		ShipCreator creator = shipFactory.get(shipKind);
+
+		if (creator == null) {
+			return null;
+		}
+
+		return creator.create(bearing, pos);
     }
 
     //---------------------------------------------------------
@@ -112,10 +109,7 @@ public abstract class Ship implements IShip
 		this.category = Objects.requireNonNull(category, "Ship's category must not be null");
 		this.bearing = Objects.requireNonNull(bearing, "Ship's bearing must not be null");
 		this.pos = Objects.requireNonNull(pos, "Ship's position must not be null");
-	
-		this.category = category;
-		this.bearing = bearing;
-		this.pos = pos;
+
 		this.size = size;
 
 		positions = new ArrayList<>();
