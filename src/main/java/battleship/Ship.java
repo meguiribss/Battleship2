@@ -1,44 +1,20 @@
-/**
- * 
- */
 package battleship;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Map;
+import java.util.*;
 
-/**
- * The type Ship.
- */
 public abstract class Ship implements IShip {
-public abstract class Ship implements IShip
-{
+
 	private interface ShipCreator {
 		Ship create(Compass bearing, Position pos);
 	}
-	/**
-	 * The constant GALEAO.
-	 */
+
 	private static final String GALEAO = "galeao";
-	/**
-	 * The constant FRAGATA.
-	 */
 	private static final String FRAGATA = "fragata";
-	/**
-	 * The constant NAU.
-	 */
 	private static final String NAU = "nau";
-	/**
-	 * The constant CARAVELA.
-	 */
 	private static final String CARAVELA = "caravela";
-	/**
-	 * The constant BARCA.
-	 */
 	private static final String BARCA = "barca";
 
+	// ✅ Replace switch with polymorphism
 	private static final Map<String, ShipCreator> shipFactory = Map.of(
 			BARCA, Barge::new,
 			CARAVELA, Caravel::new,
@@ -47,223 +23,94 @@ public abstract class Ship implements IShip
 			GALEAO, Galleon::new
 	);
 
-	/**
-	 * Create a new ship
-	 *
-	 * @param shipKind the ship kind
-	 * @param bearing  the bearing
-	 * @param pos      the pos
-	 * @return s ship
-	 */
 	static Ship buildShip(String shipKind, Compass bearing, Position pos) {
 		assert shipKind != null;
 		assert bearing != null;
 		assert pos != null;
 
-		Ship s;
-		switch (shipKind) {
-			case BARCA:
-				s = new Barge(bearing, pos);
-				break;
-			case CARAVELA:
-				s = new Caravel(bearing, pos);
-				break;
-			case NAU:
-				s = new Carrack(bearing, pos);
-				break;
-			case FRAGATA:
-				s = new Frigate(bearing, pos);
-				break;
-			case GALEAO:
-				s = new Galleon(bearing, pos);
-				break;
-			default:
-				s = null;
-		}
-		return s;
+		ShipCreator creator = shipFactory.get(shipKind);
+		return (creator != null) ? creator.create(bearing, pos) : null;
 	}
 
-	//---------------------------------------------------------
-		ShipCreator creator = shipFactory.get(shipKind);
+	// ----------------------------
 
-		if (creator == null) {
-			return null;
-		}
-
-		return creator.create(bearing, pos);
-    }
-
-    //---------------------------------------------------------
-
-	/**
-	 * The Category.
-	 */
 	private String category;
-
-	/**
-	 * The Bearing.
-	 */
 	private Compass bearing;
-
-	/**
-	 * The Pos.
-	 */
 	private IPosition pos;
-
-	/**
-	 * The size
-	 */
 	private Integer size;
-
-	/**
-	 * The Positions occupied by the ship.
-	 */
 	protected List<IPosition> positions;
 
-	/**
-	 * Create ships
-	 *
-	 * @param category The category of ships of interest
-	 * @param bearing  The bearing of ships of interest
-	 * @param pos      The position of ships of interest
-	 * @param size     The number of positions occupied by the ship
-	 */
 	public Ship(String category, Compass bearing, IPosition pos, int size) {
-		this.category = Objects.requireNonNull(category, "Ship's category must not be null");
-		this.bearing = Objects.requireNonNull(bearing, "Ship's bearing must not be null");
-		this.pos = Objects.requireNonNull(pos, "Ship's position must not be null");
+		this.category = Objects.requireNonNull(category);
+		this.bearing = Objects.requireNonNull(bearing);
+		this.pos = Objects.requireNonNull(pos);
 
-		this.category = category;
-		this.bearing = bearing;
-		this.pos = pos;
 		this.size = size;
-
-		positions = new ArrayList<>();
+		this.positions = new ArrayList<>();
 	}
 
-	/**
-	 * Gets category.
-	 *
-	 * @return the category
-	 */
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see battleship.IShip#getCategory()
-	 */
 	@Override
 	public String getCategory() {
 		return category;
 	}
 
-	/**
-	 * Gets positions.
-	 *
-	 * @return the positions
-	 */
 	public List<IPosition> getPositions() {
 		return positions;
 	}
 
-	/**
-	 * Retrieves a list of positions adjacent to the ship's current positions.
-	 * Adjacent positions are defined as neighboring positions that are not
-	 * already occupied by the ship and are not duplicates in the final list.
-	 *
-	 * @return a list of IPosition objects representing adjacent positions
-	 */
 	public List<IPosition> getAdjacentPositions() {
-		List<IPosition> adjacentPositions = new ArrayList<IPosition>();
-		for (IPosition position : getPositions()) {
-			List<IPosition> adjacents = position.adjacentPositions();
-			for (IPosition adj : adjacents)
-				if (!getPositions().contains(adj) && !adjacentPositions.contains(adj))
-					adjacentPositions.add(adj);
+		List<IPosition> adjacent = new ArrayList<>();
+
+		for (IPosition p : positions) {
+			for (IPosition adj : p.adjacentPositions()) {
+				if (!positions.contains(adj) && !adjacent.contains(adj)) {
+					adjacent.add(adj);
+				}
+			}
 		}
-		return adjacentPositions;
+		return adjacent;
 	}
 
-	/**
-	 * Gets position.
-	 *
-	 * @return the position
-	 */
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see battleship.IShip#getPosition()
-	 */
 	@Override
 	public IPosition getPosition() {
 		return pos;
 	}
 
-	/**
-	 * Gets bearing.
-	 *
-	 * @return the bearing
-	 */
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see battleship.IShip#getBearing()
-	 */
 	@Override
 	public Compass getBearing() {
 		return bearing;
 	}
 
-
-	/**
-	 * Gets size.
-	 *
-	 * @return the size
-	 */
 	public Integer getSize() {
 		return size;
 	}
 
-	/**
-	 * Still floating boolean.
-	 *
-	 * @return the boolean
-	 */
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see battleship.IShip#stillFloating()
-	 */
 	@Override
 	public boolean stillFloating() {
-		for (int i = 0; i < getSize(); i++)
-			if (!getPositions().get(i).isHit())
-				return true;
+		for (IPosition p : positions) {
+			if (!p.isHit()) return true;
+		}
 		return false;
 	}
 
-	/**
-	 * Gets top most pos.
-	 *
-	 * @return the top most pos
-	 */
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see battleship.IShip#getTopMostPos()
-	 */
-	private int getExtremeRow(boolean findMin) {
-		int value = getPositions().get(0).getRow();
+	// ✅ Extract Method (remove duplicação)
+	private int getExtremeRow(boolean min) {
+		int value = positions.get(0).getRow();
 
-		for (int i = 1; i < getSize(); i++) {
-			int current = getPositions().get(i).getRow();
-
-			if (findMin && current < value) {
-				value = current;
-			} else if (!findMin && current > value) {
-				value = current;
-			}
+		for (IPosition p : positions) {
+			if (min && p.getRow() < value) value = p.getRow();
+			if (!min && p.getRow() > value) value = p.getRow();
 		}
+		return value;
+	}
 
+	private int getExtremeColumn(boolean max) {
+		int value = positions.get(0).getColumn();
+
+		for (IPosition p : positions) {
+			if (max && p.getColumn() > value) value = p.getColumn();
+			if (!max && p.getColumn() < value) value = p.getColumn();
+		}
 		return value;
 	}
 
@@ -277,54 +124,6 @@ public abstract class Ship implements IShip
 		return getExtremeRow(false);
 	}
 
-	/**
-	 * Gets bottom most pos.
-	 *
-	 * @return the bottom most pos
-	 */
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see battleship.IShip#getBottomMostPos()
-	 */
-
-	/**
-	 * Gets left most pos.
-	 *
-	 * @return the left most pos
-	 */
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see battleship.IShip#getLeftMostPos()
-	 */
-
-	/**
-	 * Gets right most pos.
-	 *
-	 * @return the right most pos
-	 */
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see battleship.IShip#getRightMostPos()
-	 */
-	private int getExtremeColumn(boolean findMax) {
-		int value = getPositions().get(0).getColumn();
-
-		for (int i = 1; i < getSize(); i++) {
-			int current = getPositions().get(i).getColumn();
-
-			if (findMax && current > value) {
-				value = current;
-			} else if (!findMax && current < value) {
-				value = current;
-			}
-		}
-
-		return value;
-	}
-
 	@Override
 	public int getRightMostPos() {
 		return getExtremeColumn(true);
@@ -335,115 +134,52 @@ public abstract class Ship implements IShip
 		return getExtremeColumn(false);
 	}
 
-	/**
-	 * Occupies boolean.
-	 *
-	 * @param pos the pos
-	 * @return the boolean
-	 */
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see battleship.IShip#occupies(battleship.IPosition)
-	 */
 	@Override
 	public boolean occupies(IPosition pos) {
 		assert pos != null;
-
-		for (int i = 0; i < getSize(); i++)
-			if (getPositions().get(i).equals(pos))
-				return true;
-		return false;
+		return positions.contains(pos);
 	}
 
-	/**
-	 * Too close to boolean.
-	 *
-	 * @param other the other
-	 * @return the boolean
-	 */
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see battleship.IShip#tooCloseTo(battleship.IShip)
-	 */
 	@Override
 	public boolean tooCloseTo(IShip other) {
 		assert other != null;
 
-		Iterator<IPosition> otherPos = other.getPositions().iterator();
-		while (otherPos.hasNext())
-			if (tooCloseTo(otherPos.next()))
-				return true;
-
+		for (IPosition p : other.getPositions()) {
+			if (tooCloseTo(p)) return true;
+		}
 		return false;
 	}
 
-	/**
-	 * Too close to boolean.
-	 *
-	 * @param pos the pos
-	 * @return the boolean
-	 */
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see battleship.IShip#tooCloseTo(battleship.IPosition)
-	 */
 	@Override
 	public boolean tooCloseTo(IPosition pos) {
 		assert pos != null;
 
-		for (int i = 0; i < this.getSize(); i++)
-			if (getPositions().get(i).isAdjacentTo(pos))
-				return true;
+		for (IPosition p : positions) {
+			if (p.isAdjacentTo(pos)) return true;
+		}
 		return false;
 	}
 
-
-	/**
-	 * Shoot.
-	 *
-	 * @param pos the pos
-	 */
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see battleship.IShip#shoot(battleship.IPosition)
-	 */
 	@Override
 	public void shoot(IPosition pos) {
-		assert pos != null;
-		assert pos.isInside();
+		assert pos != null && pos.isInside();
 
-		for (IPosition position : getPositions()) {
-			if (position.equals(pos))
-				position.shoot();
+		for (IPosition p : positions) {
+			if (p.equals(pos)) {
+				p.shoot();
+			}
 		}
 	}
 
-	/**
-	 * Sink.
-	 */
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see battleship.IShip#sink()
-	 */
 	@Override
 	public void sink() {
-		for (IPosition position : getPositions())
-			position.shoot();
+		for (IPosition p : positions) {
+			p.shoot();
+		}
 	}
 
-	/**
-	 * To string string.
-	 *
-	 * @return the string
-	 */
 	@Override
 	public String toString() {
 		return "[" + category + " " + bearing + " " + pos + "]";
 	}
-
 }
