@@ -7,11 +7,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Map;
 
 /**
  * The type Ship.
  */
 public abstract class Ship implements IShip {
+public abstract class Ship implements IShip
+{
+	private interface ShipCreator {
+		Ship create(Compass bearing, Position pos);
+	}
 	/**
 	 * The constant GALEAO.
 	 */
@@ -32,6 +38,14 @@ public abstract class Ship implements IShip {
 	 * The constant BARCA.
 	 */
 	private static final String BARCA = "barca";
+
+	private static final Map<String, ShipCreator> shipFactory = Map.of(
+			BARCA, Barge::new,
+			CARAVELA, Caravel::new,
+			NAU, Carrack::new,
+			FRAGATA, Frigate::new,
+			GALEAO, Galleon::new
+	);
 
 	/**
 	 * Create a new ship
@@ -70,6 +84,16 @@ public abstract class Ship implements IShip {
 	}
 
 	//---------------------------------------------------------
+		ShipCreator creator = shipFactory.get(shipKind);
+
+		if (creator == null) {
+			return null;
+		}
+
+		return creator.create(bearing, pos);
+    }
+
+    //---------------------------------------------------------
 
 	/**
 	 * The Category.
