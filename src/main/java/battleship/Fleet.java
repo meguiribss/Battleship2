@@ -22,13 +22,14 @@ public class Fleet implements IFleet
 
 		Fleet randomFleet = new Fleet();
 
-		// Define the types of ships to be added
 		String[] shipTypes =
-					{"galeao",                           // 1 galleon
-				 	"fragata",                           // 1 frigate
- 				 	"nau", "nau",                        // 2 carracks
-					"caravela", "caravela", "caravela",  // 3 caravels
-					"barca", "barca", "barca", "barca"}; // 4 barges
+				{
+						GALEAO,
+						FRAGATA,
+						NAU, NAU,
+						CARAVELA, CARAVELA, CARAVELA,
+						BARCA, BARCA, BARCA, BARCA
+				};
 
 		int fleetSize = 0;
 
@@ -44,6 +45,12 @@ public class Fleet implements IFleet
 		}
 		return randomFleet;
 	}
+
+	private static final String GALEAO = "galeao";
+	private static final String FRAGATA = "fragata";
+	private static final String NAU = "nau";
+	private static final String CARAVELA = "caravela";
+	private static final String BARCA = "barca";
 
 
     // -----------------------------------------------------
@@ -84,19 +91,25 @@ public class Fleet implements IFleet
      * 
      * @see battleship.IFleet#addShip(battleship.IShip)
      */
-    @Override
-    public boolean addShip(IShip s)
-    {
+	@Override
+	public boolean addShip(IShip s)
+	{
 		assert s != null;
 
 		boolean result = false;
-		if ((ships.size() <= FLEET_SIZE) && (isInsideBoard(s)) && (!colisionRisk(s)))
+		if (canAddShip(s))
 		{
 			ships.add(s);
 			result = true;
 		}
 		return result;
-    }
+	}
+
+	private boolean canAddShip(IShip s) {
+		return (ships.size() <= FLEET_SIZE) &&
+				(isInsideBoard(s)) &&
+				(!colisionRisk(s));
+	}
 
 	/**
 	 * Gets ships like.
